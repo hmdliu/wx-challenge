@@ -130,8 +130,10 @@ dmypy.json
 save/
 
 # extra
+data/cache/
 *.json
 *.zip
 *.out
 *.err
 *.log
+*.csv

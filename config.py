@@ -4,7 +4,7 @@ import argparse
 def parse_args():
     parser = argparse.ArgumentParser(description="Baseline for Weixin Challenge 2022")
 
-    parser.add_argument("--seed", type=int, default=2022, help="random seed.")
+    parser.add_argument("--seed", type=int, default=42, help="random seed.")
     parser.add_argument('--dropout', type=float, default=0.3, help='dropout ratio')
 
     # ========================= Data Configs ==========================

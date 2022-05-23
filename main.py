@@ -49,9 +49,9 @@ def train_and_validate(args):
             loss, accuracy, _, _ = model(batch)
             loss = loss.mean()
             accuracy = accuracy.mean()
+            optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            optimizer.zero_grad()
             scheduler.step()
 
             step += 1
