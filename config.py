@@ -26,8 +26,9 @@ def parse_args():
     parser.add_argument('--best_score', default=0.57, type=float, help='save checkpoint if mean_f1 > best_score')
 
     # ========================= Learning Configs ==========================
-    parser.add_argument('--max_epochs', type=int, default=10, help='How many epochs')
+    parser.add_argument('--max_epochs', type=int, default=20, help='How many epochs')
     parser.add_argument('--max_steps', default=50000, type=int, metavar='N', help='number of total epochs to run')
+    parser.add_argument('--es_patience', type=int, default=3, help='Early stop patience')
     parser.add_argument('--print_steps', type=int, default=20, help="Number of steps to log training metrics.")
     parser.add_argument('--warmup_steps', default=1000, type=int, help="warm ups for parameters not in bert or vit")
     parser.add_argument('--minimum_lr', default=0., type=float, help='minimum learning rate')

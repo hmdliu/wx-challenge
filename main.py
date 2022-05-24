@@ -40,6 +40,8 @@ def train_and_validate(args):
 
     # 3. training
     step = 0
+    prev_f1 = 0
+    patience = 0
     best_score = args.best_score
     start_time = time.time()
     num_total_steps = len(train_dataloader) * args.max_epochs
@@ -73,6 +75,13 @@ def train_and_validate(args):
             state_dict = model.module.state_dict() if args.device == 'cuda' else model.state_dict()
             torch.save({'epoch': epoch, 'model_state_dict': state_dict, 'mean_f1': mean_f1},
                        f'{args.savedmodel_path}/model_epoch_{epoch}_mean_f1_{mean_f1}.bin')
+        
+        # 6. early stopping
+        patience = (patience + 1) if mean_f1 < prev_f1 else 0
+        prev_f1 = mean_f1
+        if patience >= args.es_patience:
+            logging.info(f"Epoch {epoch} step {step}: early stopping")
+            break
 
 
 def main():

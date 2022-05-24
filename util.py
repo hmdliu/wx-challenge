@@ -4,7 +4,11 @@ import random
 import numpy as np
 from sklearn.metrics import f1_score, accuracy_score
 import torch
-from transformers import AdamW, get_linear_schedule_with_warmup
+from transformers import (
+    AdamW,
+    get_linear_schedule_with_warmup,
+    get_cosine_schedule_with_warmup
+)
 
 from category_id_map import lv2id_to_lv1id
 
@@ -40,6 +44,8 @@ def build_optimizer(args, model):
     optimizer = AdamW(optimizer_grouped_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
     scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=args.warmup_steps,
                                                 num_training_steps=args.max_steps)
+    # scheduler = get_cosine_schedule_with_warmup(optimizer, num_warmup_steps=args.warmup_steps,
+    #                                             num_training_steps=args.max_steps)
     return optimizer, scheduler
 
 
