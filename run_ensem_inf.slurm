@@ -3,11 +3,7 @@
 #SBATCH --time=1:00:00
 #SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:v100:1
-#SBATCH --mem=32G
-
-# checkpoint info
-exp_id=$1
-ckpt_name=$2
+#SBATCH --mem=64G
 
 # Singularity path
 ext3_path=/scratch/$USER/overlay-25GB-500K.ext3
@@ -19,7 +15,5 @@ singularity exec --nv --bind /scratch \
 /bin/bash -c "
 source /ext3/env.sh
 cd /scratch/$USER/wx-challenge
-python inference.py \
-    --ckpt_file save/${exp_id}/${ckpt_name}.bin \
-    --test_output_csv pred/${exp_id}_${ckpt_name}.csv
+python ensemble_inference.py
 "

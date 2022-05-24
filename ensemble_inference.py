@@ -7,11 +7,12 @@ from category_id_map import lv2id_to_category_id
 from model import MultiModal
 
 MODEL_PATH_LIST = [
-    './save/base_1/model_epoch_5_mean_f1_0.5776.bin',
-    './save/base_2/model_epoch_3_mean_f1_0.5781.bin',
-    './save/base_3/model_epoch_4_mean_f1_0.5744.bin',
-    './save/base_4/model_epoch_5_mean_f1_0.5876.bin',
-    './save/base_5/model_epoch_4_mean_f1_0.5772.bin',
+    './save/lao_cos_do00_2/model_epoch_4_mean_f1_0.6187.bin',
+    './save/lao_cos_do00_3/model_epoch_5_mean_f1_0.619.bin',
+    './save/lao_cos_do30_2/model_epoch_4_mean_f1_0.6162.bin',
+    './save/lao_cos_do30_3/model_epoch_7_mean_f1_0.6193.bin',
+    './save/lao_cos_do50_2/model_epoch_5_mean_f1_0.6153.bin',
+    './save/lao_cos_do50_3/model_epoch_5_mean_f1_0.6151.bin',
 ]
 
 def ensemble_inference():
@@ -31,7 +32,10 @@ def ensemble_inference():
     model_list = [MultiModal(args) for i in range(len(MODEL_PATH_LIST))]
     for i in range(len(MODEL_PATH_LIST)):
         checkpoint = torch.load(MODEL_PATH_LIST[i], map_location='cpu')
-        model_list[i].load_state_dict(checkpoint['model_state_dict'])
+        msg = model_list[i].load_state_dict(checkpoint['model_state_dict'], strict=False)
+        if len(msg.missing_keys) > 0:
+            model_list[i].classifier[1].weight.data = checkpoint['model_state_dict']['classifier.0.weight']
+            model_list[i].classifier[1].bias.data = checkpoint['model_state_dict']['classifier.0.bias']
         if torch.cuda.is_available():
             model_list[i] = torch.nn.parallel.DataParallel(model_list[i].cuda())
         model_list[i].eval()
