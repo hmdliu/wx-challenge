@@ -23,10 +23,10 @@ def parse_args():
     # ======================== SavedModel Configs =========================
     parser.add_argument('--savedmodel_path', type=str, default='save/v1')
     parser.add_argument('--ckpt_file', type=str, default='save/v1/model_.bin')
-    parser.add_argument('--best_score', default=0.5, type=float, help='save checkpoint if mean_f1 > best_score')
+    parser.add_argument('--best_score', default=0.57, type=float, help='save checkpoint if mean_f1 > best_score')
 
     # ========================= Learning Configs ==========================
-    parser.add_argument('--max_epochs', type=int, default=20, help='How many epochs')
+    parser.add_argument('--max_epochs', type=int, default=10, help='How many epochs')
     parser.add_argument('--max_steps', default=50000, type=int, metavar='N', help='number of total epochs to run')
     parser.add_argument('--print_steps', type=int, default=20, help="Number of steps to log training metrics.")
     parser.add_argument('--warmup_steps', default=1000, type=int, help="warm ups for parameters not in bert or vit")

@@ -32,7 +32,7 @@ def inference():
     predictions = []
     with torch.no_grad():
         for batch in dataloader:
-            pred_label_id = model(batch, inference=True)
+            pred_label_id = torch.argmax(model(batch, inference=True), dim=1)
             predictions.extend(pred_label_id.cpu().numpy())
 
     # 4. dump results

@@ -27,7 +27,8 @@ class MultiModal(nn.Module):
         prediction = self.classifier(final_embedding)
 
         if inference:
-            return torch.argmax(prediction, dim=1)
+            return prediction
+            # return torch.argmax(prediction, dim=1)
         else:
             return self.cal_loss(prediction, inputs['label'])
 

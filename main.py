@@ -77,6 +77,11 @@ def train_and_validate(args):
 
 def main():
     args = parse_args()
+    
+    # from random import randint
+    # args.seed = randint(0, 2022)
+    # print('seed:', args.seed)
+
     setup_logging()
     setup_device(args)
     setup_seed(args)
