@@ -124,8 +124,9 @@ class MultiModalDataset(Dataset):
         frame_input, frame_mask = self.get_visual_feats(idx)
 
         # Step 2, load title tokens
+        ocr_text = [d['text'] for d in self.anns[idx]['ocr']]
         title_input, title_mask = self.tokenize_text(
-            ' '.join([self.anns[idx]['title'], self.anns[idx]['asr']])
+            ' '.join([self.anns[idx]['title'], self.anns[idx]['asr']] + ocr_text)
         )
 
         # Step 3, summarize into a dictionary

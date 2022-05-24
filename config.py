@@ -26,7 +26,7 @@ def parse_args():
     parser.add_argument('--best_score', default=0.57, type=float, help='save checkpoint if mean_f1 > best_score')
 
     # ========================= Learning Configs ==========================
-    parser.add_argument('--max_epochs', type=int, default=20, help='How many epochs')
+    parser.add_argument('--max_epochs', type=int, default=10, help='How many epochs')
     parser.add_argument('--max_steps', default=50000, type=int, metavar='N', help='number of total epochs to run')
     parser.add_argument('--es_patience', type=int, default=3, help='Early stop patience')
     parser.add_argument('--print_steps', type=int, default=20, help="Number of steps to log training metrics.")
@@ -39,7 +39,7 @@ def parse_args():
     # ========================== Title BERT =============================
     parser.add_argument('--bert_dir', type=str, default='hfl/chinese-macbert-base')
     parser.add_argument('--bert_cache', type=str, default='data/cache')
-    parser.add_argument('--bert_seq_length', type=int, default=50)
+    parser.add_argument('--bert_seq_length', type=int, default=128)
     parser.add_argument('--bert_learning_rate', type=float, default=3e-5)
     parser.add_argument('--bert_warmup_steps', type=int, default=5000)
     parser.add_argument('--bert_max_steps', type=int, default=30000)

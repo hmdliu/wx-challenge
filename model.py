@@ -15,7 +15,10 @@ class MultiModal(nn.Module):
         self.enhance = SENet(channels=args.vlad_hidden_size, ratio=args.se_ratio)
         bert_output_size = 768
         self.fusion = ConcatDenseSE(args.vlad_hidden_size + bert_output_size, args.fc_size, args.se_ratio, args.dropout)
-        self.classifier = nn.Linear(args.fc_size, len(CATEGORY_ID_LIST))
+        self.classifier = nn.Sequential(
+            nn.Dropout(p=0.3),
+            nn.Linear(args.fc_size, len(CATEGORY_ID_LIST))
+        )
 
     def forward(self, inputs, inference=False):
         bert_embedding = self.bert(inputs['title_input'], inputs['title_mask'])['pooler_output']
