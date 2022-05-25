@@ -16,7 +16,7 @@ class MultiModal(nn.Module):
         bert_output_size = 768
         self.fusion = ConcatDenseSE(args.vlad_hidden_size + bert_output_size, args.fc_size, args.se_ratio, args.dropout)
         self.classifier = nn.Sequential(
-            nn.Dropout(p=0.3),
+            nn.Dropout(p=args.final_dropout),
             nn.Linear(args.fc_size, len(CATEGORY_ID_LIST))
         )
 

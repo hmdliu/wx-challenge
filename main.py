@@ -2,12 +2,13 @@ import logging
 import os
 import time
 import torch
+import random
 
 from config import parse_args
 from data_helper import create_dataloaders
 from model import MultiModal
 from deberta import DeBERTaMultiModal
-from util import setup_device, setup_seed, setup_logging, build_optimizer, evaluate
+from util import *
 
 
 def validate(model, val_dataloader):
@@ -89,12 +90,25 @@ def train_and_validate(args):
 def main():
     args = parse_args()
 
+    # random hyperparameter search
+    args.seed = random.randint(0, 2022)
+    args.dropout = random.choice([0.2, 0.3])
+    args.final_dropout = random.choice([0.0, 0.3, 0.5])
+    args.warmup_steps = random.choice([500, 1000, 2000])
+    args.lr_scheduler = random.choice(['cosine', 'linear'])
+    args.learning_rate = log_uniform(3e-5, 7e-5)
+    print('=' * 15, 'Search Config', '=' * 15)
+    print(f'seed: {args.seed}')
+    print(f'dropout: {args.dropout}')
+    print(f'final_dropout: {args.final_dropout}')
+    print(f'warmup_steps: {args.warmup_steps}')
+    print(f'lr_scheduler: {args.lr_scheduler}')
+    print(f'learning_rate: {args.learning_rate}')
+    print(f'save_dir: {args.savedmodel_path}')
+    print('=' * 45, end='\n\n')
+    
     setup_logging()
     setup_device(args)
-
-    # from random import randint
-    # args.seed = randint(0, 2022)
-    # print('seed:', args.seed)
     setup_seed(args)
 
     os.makedirs(args.savedmodel_path, exist_ok=True)

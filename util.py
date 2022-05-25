@@ -42,10 +42,13 @@ def build_optimizer(args, model):
         {'params': [p for n, p in model.named_parameters() if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
     ]
     optimizer = AdamW(optimizer_grouped_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
-    # scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=args.warmup_steps,
-    #                                             num_training_steps=args.max_steps)
-    scheduler = get_cosine_schedule_with_warmup(optimizer, num_warmup_steps=args.warmup_steps,
-                                                num_training_steps=args.max_steps)
+    if args.lr_scheduler == 'cosine':
+        scheduler = get_cosine_schedule_with_warmup(optimizer, num_warmup_steps=args.warmup_steps,
+                                                    num_training_steps=args.max_steps)
+    else:
+        scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=args.warmup_steps,
+                                                    num_training_steps=args.max_steps)
+
     return optimizer, scheduler
 
 
@@ -70,3 +73,8 @@ def evaluate(predictions, labels):
                     'mean_f1': mean_f1}
 
     return eval_results
+
+def log_uniform(low, high):
+    log_rval = np.random.uniform(np.log(low), np.log(high))
+    rval = float(np.exp(log_rval))
+    return rval

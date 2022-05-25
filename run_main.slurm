@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=MultiModal
-#SBATCH --time=10:00:00
+#SBATCH --time=4:00:00
 #SBATCH --cpus-per-task=4
-#SBATCH --gres=gpu:v100:1
+#SBATCH --gres=gpu:1
 #SBATCH --mem=32G
 
 # experiment id
@@ -20,6 +20,5 @@ source /ext3/env.sh
 cd /scratch/$USER/wx-challenge
 python main.py \
     --savedmodel_path save/${exp_id} \
-    --ckpt_file save/${exp_id}/model_.bin \
     > logs/${exp_id}.log 2>&1
 "
