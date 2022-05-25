@@ -6,6 +6,7 @@ import torch
 from config import parse_args
 from data_helper import create_dataloaders
 from model import MultiModal
+from deberta import DeBERTaMultiModal
 from util import setup_device, setup_seed, setup_logging, build_optimizer, evaluate
 
 
@@ -33,6 +34,7 @@ def train_and_validate(args):
     train_dataloader, val_dataloader = create_dataloaders(args)
 
     # 2. build model and optimizers
+    # model = DeBERTaMultiModal(args)
     model = MultiModal(args)
     optimizer, scheduler = build_optimizer(args, model)
     if args.device == 'cuda':
@@ -86,13 +88,13 @@ def train_and_validate(args):
 
 def main():
     args = parse_args()
-    
-    from random import randint
-    args.seed = randint(0, 2022)
-    print('seed:', args.seed)
 
     setup_logging()
     setup_device(args)
+
+    # from random import randint
+    # args.seed = randint(0, 2022)
+    # print('seed:', args.seed)
     setup_seed(args)
 
     os.makedirs(args.savedmodel_path, exist_ok=True)

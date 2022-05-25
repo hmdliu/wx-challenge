@@ -23,7 +23,7 @@ def parse_args():
     # ======================== SavedModel Configs =========================
     parser.add_argument('--savedmodel_path', type=str, default='save/v1')
     parser.add_argument('--ckpt_file', type=str, default='save/v1/model_.bin')
-    parser.add_argument('--best_score', default=0.57, type=float, help='save checkpoint if mean_f1 > best_score')
+    parser.add_argument('--best_score', default=0.61, type=float, help='save checkpoint if mean_f1 > best_score')
 
     # ========================= Learning Configs ==========================
     parser.add_argument('--max_epochs', type=int, default=10, help='How many epochs')
@@ -37,6 +37,7 @@ def parse_args():
     parser.add_argument("--adam_epsilon", default=1e-6, type=float, help="Epsilon for Adam optimizer.")
 
     # ========================== Title BERT =============================
+    # parser.add_argument('--bert_dir', type=str, default='WENGSYX/Deberta-Chinese-Large')
     parser.add_argument('--bert_dir', type=str, default='hfl/chinese-macbert-base')
     parser.add_argument('--bert_cache', type=str, default='data/cache')
     parser.add_argument('--bert_seq_length', type=int, default=128)
