@@ -131,9 +131,11 @@ save/
 
 # extra
 data/cache/
+tmp/
 *.json
 *.zip
 *.out
 *.err
 *.log
 *.csv
+*.swp

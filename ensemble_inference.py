@@ -1,5 +1,6 @@
 import torch
 from torch.utils.data import SequentialSampler, DataLoader
+from tqdm import tqdm
 
 from config import parse_args
 from data_helper import MultiModalDataset
@@ -13,6 +14,11 @@ MODEL_PATH_LIST = [
     './save/lao_cos_do30_3/model_epoch_7_mean_f1_0.6193.bin',
     './save/lao_cos_do50_2/model_epoch_5_mean_f1_0.6153.bin',
     './save/lao_cos_do50_3/model_epoch_5_mean_f1_0.6151.bin',
+    './save/mb_nxv_rs_01/model_epoch_4_mean_f1_0.6198.bin',
+    './save/mb_nxv_rs_02/model_epoch_8_mean_f1_0.6191.bin',
+    './save/mb_nxv_rs_03/model_epoch_7_mean_f1_0.6175.bin',
+    './save/mb_nxv_rs_04/model_epoch_3_mean_f1_0.6174.bin',
+    './save/mb_nxv_rs_07/model_epoch_7_mean_f1_0.6244.bin',
 ]
 
 def ensemble_inference():
@@ -43,7 +49,7 @@ def ensemble_inference():
     # 3. inference
     predictions = []
     with torch.no_grad():
-        for batch in dataloader:
+        for batch in tqdm(dataloader):
             pred_list = []
 
             # sum

@@ -85,6 +85,8 @@ def train_and_validate(args):
         if patience >= args.es_patience:
             logging.info(f"Epoch {epoch} step {step}: early stopping")
             break
+    
+    logging.info(f"Best Pred {mean_f1}")
 
 
 def main():
@@ -92,9 +94,9 @@ def main():
 
     # random hyperparameter search
     args.seed = random.randint(0, 2022)
-    args.dropout = random.choice([0.2, 0.3])
-    args.final_dropout = random.choice([0.0, 0.3, 0.5])
-    args.warmup_steps = random.choice([500, 1000, 2000])
+    args.dropout = random.choice([0.1, 0.2, 0.3])
+    # args.final_dropout = random.choice([0.0, 0.3, 0.5])
+    # args.warmup_steps = random.choice([500, 1000, 2000])
     args.lr_scheduler = random.choice(['cosine', 'linear'])
     args.learning_rate = log_uniform(3e-5, 7e-5)
     print('=' * 15, 'Search Config', '=' * 15)

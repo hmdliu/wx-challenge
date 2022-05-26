@@ -10,6 +10,7 @@ class MultiModal(nn.Module):
     def __init__(self, args):
         super().__init__()
         self.bert = BertModel.from_pretrained(args.bert_dir, cache_dir=args.bert_cache)
+        self.refine = SimAM_Block()
         self.nextvlad = NeXtVLAD(args.frame_embedding_size, args.vlad_cluster_size,
                                  output_size=args.vlad_hidden_size, dropout=args.dropout)
         self.enhance = SENet(channels=args.vlad_hidden_size, ratio=args.se_ratio)
@@ -23,7 +24,8 @@ class MultiModal(nn.Module):
     def forward(self, inputs, inference=False):
         bert_embedding = self.bert(inputs['title_input'], inputs['title_mask'])['pooler_output']
 
-        vision_embedding = self.nextvlad(inputs['frame_input'], inputs['frame_mask'])
+        frame_feats = self.refine(inputs['frame_input'].permute(0, 2, 1).unsqueeze(3))
+        vision_embedding = self.nextvlad(frame_feats.squeeze(3).permute(0, 2, 1))
         vision_embedding = self.enhance(vision_embedding)
 
         final_embedding = self.fusion([vision_embedding, bert_embedding])
@@ -66,8 +68,7 @@ class NeXtVLAD(nn.Module):
             torch.nn.init.normal_(torch.rand(1, self.new_feature_size, self.cluster_size), std=0.01))
         self.fc = torch.nn.Linear(self.new_feature_size * self.cluster_size, self.output_size)
 
-    def forward(self, inputs, mask):
-        # todo mask
+    def forward(self, inputs):
         inputs = self.expansion_linear(inputs)
         attention = self.group_attention(inputs)
         attention = torch.sigmoid(attention)
@@ -88,6 +89,21 @@ class NeXtVLAD(nn.Module):
         vlad = self.dropout(vlad)
         vlad = self.fc(vlad)
         return vlad
+
+
+# SimAM Block (Parameter-free 3D Attention)
+class SimAM_Block(torch.nn.Module):
+    def __init__(self, lamb=1e-4):
+        super().__init__()
+        self.act = nn.Sigmoid()
+        self.lamb = lamb
+
+    def forward(self, x):
+        _, _, h, w = x.size()
+        n = w * h - 1
+        x_minus_mu_square = (x - x.mean(dim=[2,3], keepdim=True)).pow(2)
+        y = x_minus_mu_square / (4 * (x_minus_mu_square.sum(dim=[2,3], keepdim=True) / n + self.lamb)) + 0.5
+        return x * self.act(y)
 
 
 class SENet(nn.Module):
