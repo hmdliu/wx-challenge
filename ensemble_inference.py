@@ -8,17 +8,8 @@ from category_id_map import lv2id_to_category_id
 from model import MultiModal
 
 MODEL_PATH_LIST = [
-    './save/lao_cos_do00_2/model_epoch_4_mean_f1_0.6187.bin',
-    './save/lao_cos_do00_3/model_epoch_5_mean_f1_0.619.bin',
-    './save/lao_cos_do30_2/model_epoch_4_mean_f1_0.6162.bin',
-    './save/lao_cos_do30_3/model_epoch_7_mean_f1_0.6193.bin',
-    './save/lao_cos_do50_2/model_epoch_5_mean_f1_0.6153.bin',
-    './save/lao_cos_do50_3/model_epoch_5_mean_f1_0.6151.bin',
-    './save/mb_nxv_rs_01/model_epoch_4_mean_f1_0.6198.bin',
-    './save/mb_nxv_rs_02/model_epoch_8_mean_f1_0.6191.bin',
-    './save/mb_nxv_rs_03/model_epoch_7_mean_f1_0.6175.bin',
-    './save/mb_nxv_rs_04/model_epoch_3_mean_f1_0.6174.bin',
-    './save/mb_nxv_rs_07/model_epoch_7_mean_f1_0.6244.bin',
+    './save/v1/model_epoch_0_mean_f1_0.0170.bin',
+    './save/v1/model_epoch_1_mean_f1_0.0211.bin',
 ]
 
 def ensemble_inference():
@@ -35,16 +26,15 @@ def ensemble_inference():
                             prefetch_factor=args.prefetch)
 
     # 2. load model
-    model_list = [MultiModal(args) for i in range(len(MODEL_PATH_LIST))]
+    model_list = []
     for i in range(len(MODEL_PATH_LIST)):
         checkpoint = torch.load(MODEL_PATH_LIST[i], map_location='cpu')
-        msg = model_list[i].load_state_dict(checkpoint['model_state_dict'], strict=False)
-        if len(msg.missing_keys) > 0:
-            model_list[i].classifier[1].weight.data = checkpoint['model_state_dict']['classifier.0.weight']
-            model_list[i].classifier[1].bias.data = checkpoint['model_state_dict']['classifier.0.bias']
+        model = checkpoint['model_class'](checkpoint['args'])
+        model.load_state_dict(checkpoint['model_state_dict'])
         if torch.cuda.is_available():
-            model_list[i] = torch.nn.parallel.DataParallel(model_list[i].cuda())
-        model_list[i].eval()
+            model = torch.nn.parallel.DataParallel(model.cuda())
+        model.eval()
+        model_list.append(model)
 
     # 3. inference
     predictions = []

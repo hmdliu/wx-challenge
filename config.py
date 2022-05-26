@@ -23,11 +23,11 @@ def parse_args():
 
     # ======================== SavedModel Configs =========================
     parser.add_argument('--savedmodel_path', type=str, default='save/v1')
-    parser.add_argument('--ckpt_file', type=str, default='save/v1/model_.bin')
-    parser.add_argument('--best_score', default=0.615, type=float, help='save checkpoint if mean_f1 > best_score')
+    parser.add_argument('--ckpt_file', type=str, default='save/v1/model.bin')
+    parser.add_argument('--export_bound', default=0.615, type=float, help='save checkpoint if mean_f1 > export_bound')
 
     # ========================= Learning Configs ==========================
-    parser.add_argument('--max_epochs', type=int, default=10, help='How many epochs')
+    parser.add_argument('--max_epochs', type=int, default=12, help='How many epochs')
     parser.add_argument('--max_steps', default=50000, type=int, metavar='N', help='number of total epochs to run')
     parser.add_argument('--print_steps', type=int, default=20, help="Number of steps to log training metrics.")
     parser.add_argument('--warmup_steps', default=500, type=int, help="warm ups for parameters not in bert or vit")
@@ -39,7 +39,6 @@ def parse_args():
     parser.add_argument('--lr_scheduler', type=str, default='cosine', help='Learning rate scheduler')
 
     # ========================== Title BERT =============================
-    # parser.add_argument('--bert_dir', type=str, default='WENGSYX/Deberta-Chinese-Large')
     parser.add_argument('--bert_dir', type=str, default='hfl/chinese-macbert-base')
     parser.add_argument('--bert_cache', type=str, default='data/cache')
     parser.add_argument('--bert_seq_length', type=int, default=128)
@@ -58,5 +57,6 @@ def parse_args():
 
     # ========================== Fusion Layer =============================
     parser.add_argument('--fc_size', type=int, default=512, help="linear size before final linear")
+    parser.add_argument('--simam', type=bool, default=False, help="SimAM before nextvlad")
 
     return parser.parse_args()

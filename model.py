@@ -10,7 +10,6 @@ class MultiModal(nn.Module):
     def __init__(self, args):
         super().__init__()
         self.bert = BertModel.from_pretrained(args.bert_dir, cache_dir=args.bert_cache)
-        self.refine = SimAM_Block()
         self.nextvlad = NeXtVLAD(args.frame_embedding_size, args.vlad_cluster_size,
                                  output_size=args.vlad_hidden_size, dropout=args.dropout)
         self.enhance = SENet(channels=args.vlad_hidden_size, ratio=args.se_ratio)
@@ -20,12 +19,18 @@ class MultiModal(nn.Module):
             nn.Dropout(p=args.final_dropout),
             nn.Linear(args.fc_size, len(CATEGORY_ID_LIST))
         )
+        self.simam = args.simam
+        if args.simam:
+            self.refine = SimAM_Block()
 
     def forward(self, inputs, inference=False):
         bert_embedding = self.bert(inputs['title_input'], inputs['title_mask'])['pooler_output']
 
-        frame_feats = self.refine(inputs['frame_input'].permute(0, 2, 1).unsqueeze(3))
-        vision_embedding = self.nextvlad(frame_feats.squeeze(3).permute(0, 2, 1))
+        if self.simam:
+            frame_feats = self.refine(inputs['frame_input'].permute(0, 2, 1).unsqueeze(3))
+            vision_embedding = self.nextvlad(frame_feats.squeeze(3).permute(0, 2, 1))
+        else:
+            vision_embedding = self.nextvlad(inputs['frame_input'])
         vision_embedding = self.enhance(vision_embedding)
 
         final_embedding = self.fusion([vision_embedding, bert_embedding])

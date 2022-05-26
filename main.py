@@ -7,7 +7,6 @@ import random
 from config import parse_args
 from data_helper import create_dataloaders
 from model import MultiModal
-from deberta import DeBERTaMultiModal
 from util import *
 
 
@@ -35,17 +34,18 @@ def train_and_validate(args):
     train_dataloader, val_dataloader = create_dataloaders(args)
 
     # 2. build model and optimizers
-    # model = DeBERTaMultiModal(args)
-    model = MultiModal(args)
+    model_class = MultiModal
+    model = model_class(args)
+    logging.info(f"Model: {model}")
     optimizer, scheduler = build_optimizer(args, model)
     if args.device == 'cuda':
         model = torch.nn.parallel.DataParallel(model.to(args.device))
 
     # 3. training
     step = 0
-    prev_f1 = 0
     patience = 0
-    best_score = args.best_score
+    best_score = 0
+    prev_score = 0
     start_time = time.time()
     num_total_steps = len(train_dataloader) * args.max_epochs
     for epoch in range(args.max_epochs):
@@ -72,21 +72,27 @@ def train_and_validate(args):
         logging.info(f"Epoch {epoch} step {step}: loss {loss:.3f}, {results}")
 
         # 5. save checkpoint
-        mean_f1 = results['mean_f1']
-        if mean_f1 > best_score:
-            best_score = mean_f1
+        curr_score = results['mean_f1']
+        if curr_score > max(best_score, args.export_bound):
+            best_score = curr_score
             state_dict = model.module.state_dict() if args.device == 'cuda' else model.state_dict()
-            torch.save({'epoch': epoch, 'model_state_dict': state_dict, 'mean_f1': mean_f1},
-                       f'{args.savedmodel_path}/model_epoch_{epoch}_mean_f1_{mean_f1}.bin')
+            save_dict = {
+                'args': args,
+                'epoch': epoch,
+                'mean_f1': curr_score,
+                'model_class': model_class,
+                'model_state_dict': state_dict,
+            }
+            torch.save(save_dict, f'{args.savedmodel_path}/model_epoch_{epoch}_mean_f1_{curr_score:.4f}.bin')
         
         # 6. early stopping
-        patience = (patience + 1) if mean_f1 < prev_f1 else 0
-        prev_f1 = mean_f1
+        patience = (patience + 1) if curr_score < prev_score else 0
+        prev_score = curr_score
         if patience >= args.es_patience:
             logging.info(f"Epoch {epoch} step {step}: early stopping")
             break
     
-    logging.info(f"Best Pred {mean_f1}")
+    logging.info(f"Best Pred {best_score}")
 
 
 def main():
@@ -95,8 +101,7 @@ def main():
     # random hyperparameter search
     args.seed = random.randint(0, 2022)
     args.dropout = random.choice([0.1, 0.2, 0.3])
-    # args.final_dropout = random.choice([0.0, 0.3, 0.5])
-    # args.warmup_steps = random.choice([500, 1000, 2000])
+    args.final_dropout = random.choice([0.0, 0.3, 0.5])
     args.lr_scheduler = random.choice(['cosine', 'linear'])
     args.learning_rate = log_uniform(3e-5, 7e-5)
     print('=' * 15, 'Search Config', '=' * 15)
