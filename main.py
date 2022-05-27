@@ -36,7 +36,7 @@ def train_and_validate(args):
     # 2. build model and optimizers
     model_class = MultiModal
     model = model_class(args)
-    logging.info(f"Model: {model}")
+    # logging.info(f"Model: {model}")
     optimizer, scheduler = build_optimizer(args, model)
     if args.device == 'cuda':
         model = torch.nn.parallel.DataParallel(model.to(args.device))
@@ -73,8 +73,9 @@ def train_and_validate(args):
 
         # 5. save checkpoint
         curr_score = results['mean_f1']
-        if curr_score > max(best_score, args.export_bound):
+        if curr_score > best_score:
             best_score = curr_score
+        if curr_score > max(best_score, args.export_bound):
             state_dict = model.module.state_dict() if args.device == 'cuda' else model.state_dict()
             save_dict = {
                 'args': args,
@@ -101,7 +102,7 @@ def main():
     # random hyperparameter search
     args.seed = random.randint(0, 2022)
     args.dropout = random.choice([0.1, 0.2, 0.3])
-    args.final_dropout = random.choice([0.0, 0.3, 0.5])
+    args.final_dropout = random.choice([0.0, 0.5])
     args.lr_scheduler = random.choice(['cosine', 'linear'])
     args.learning_rate = log_uniform(3e-5, 7e-5)
     print('=' * 15, 'Search Config', '=' * 15)

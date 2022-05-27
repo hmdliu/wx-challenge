@@ -9,8 +9,8 @@ def parse_args():
     parser.add_argument('--final_dropout', type=float, default=0.5, help='final dropout ratio')
 
     # ========================= Data Configs ==========================
-    parser.add_argument('--train_annotation', type=str, default='data/annotations/labeled.json')
-    parser.add_argument('--test_annotation', type=str, default='data/annotations/test_a.json')
+    parser.add_argument('--train_annotation', type=str, default='data/annotations/labeled_preprocessed.json')
+    parser.add_argument('--test_annotation', type=str, default='data/annotations/test_a_preprocessed.json')
     parser.add_argument('--train_zip_feats', type=str, default='data/zip_feats/labeled.zip')
     parser.add_argument('--test_zip_feats', type=str, default='data/zip_feats/test_a.zip')
     parser.add_argument('--test_output_csv', type=str, default='pred/result.csv')
@@ -20,6 +20,7 @@ def parse_args():
     parser.add_argument('--test_batch_size', default=256, type=int, help="use for testing duration per worker")
     parser.add_argument('--prefetch', default=16, type=int, help="use for training duration per worker")
     parser.add_argument('--num_workers', default=4, type=int, help="num_workers for dataloaders")
+    parser.add_argument('--preprocess_text', default=True, type=bool, help="remove stop words")
 
     # ======================== SavedModel Configs =========================
     parser.add_argument('--savedmodel_path', type=str, default='save/v1')

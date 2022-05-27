@@ -1,9 +1,11 @@
-import logging
-import random
 
+import random
+import logging
 import numpy as np
-from sklearn.metrics import f1_score, accuracy_score
+
 import torch
+from spacy.lang.zh.stop_words import STOP_WORDS
+from sklearn.metrics import f1_score, accuracy_score
 from transformers import (
     AdamW,
     get_linear_schedule_with_warmup,
@@ -78,3 +80,11 @@ def log_uniform(low, high):
     log_rval = np.random.uniform(np.log(low), np.log(high))
     rval = float(np.exp(log_rval))
     return rval
+
+def remove_stopwords(string, nlp):
+    doc = nlp(string)
+    new_string = []
+    for token in doc:
+        if token.text not in STOP_WORDS:
+            new_string.append(token.text)
+    return ''.join(new_string)

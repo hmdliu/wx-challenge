@@ -24,7 +24,7 @@ class MultiModal(nn.Module):
             self.refine = SimAM_Block()
 
     def forward(self, inputs, inference=False):
-        bert_embedding = self.bert(inputs['title_input'], inputs['title_mask'])['pooler_output']
+        bert_embedding = self.bert(inputs['text_input'], inputs['text_mask'])['pooler_output']
 
         if self.simam:
             frame_feats = self.refine(inputs['frame_input'].permute(0, 2, 1).unsqueeze(3))

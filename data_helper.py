@@ -4,11 +4,13 @@ import zipfile
 from io import BytesIO
 from functools import partial
 
+import spacy
 import numpy as np
 import torch
 from torch.utils.data import DataLoader, Dataset, RandomSampler, SequentialSampler
 from transformers import BertTokenizer
 
+from util import remove_stopwords
 from category_id_map import category_id_to_lv2id
 
 
@@ -67,15 +69,16 @@ class MultiModalDataset(Dataset):
             self.handles = zipfile.ZipFile(self.zip_feat_path, 'r')
         # load annotations
         with open(ann_path, 'r', encoding='utf8') as f:
-            self.anns = self.preprocess_anns(json.load(f))
+            self.anns = self.sample_anns(json.load(f))
         # initialize the text tokenizer
+        self.preprocess_text = args.preprocess_text
         self.tokenizer = BertTokenizer.from_pretrained(args.bert_dir, use_fast=True, cache_dir=args.bert_cache)
 
-    def preprocess_anns(self, anns, class_id='13', num_samples=10000):
+    def sample_anns(self, anns, class_id='13', num_samples=10000):
         # skip for the test set
         if self.test_mode:
             return anns
-        # preprocessing
+        # sample annotations
         filtered, samples = [], []
         for i in range(len(anns)):
             # sample a subset of class 13
@@ -83,7 +86,6 @@ class MultiModalDataset(Dataset):
                 samples.append(anns[i])
             else:
                 filtered.append(anns[i])
-            # TODO: preprocess ocr and asr data
         # shuffle the samples
         random.shuffle(samples)
         filtered.extend(samples[:num_samples])
@@ -143,17 +145,17 @@ class MultiModalDataset(Dataset):
         frame_input, frame_mask = self.get_visual_feats(idx)
 
         # Step 2, load title tokens
-        ocr_text = [d['text'] for d in self.anns[idx]['ocr']]
-        title_input, title_mask = self.tokenize_text(
-            ' '.join([self.anns[idx]['title'], self.anns[idx]['asr']] + ocr_text)
-        )
+        text = self.anns[idx]['input_text']
+        if self.preprocess_text:
+            text = self.anns[idx]['input_text_filtered']
+        text_input, text_mask = self.tokenize_text(text)
 
         # Step 3, summarize into a dictionary
         data = dict(
             frame_input=frame_input,
             frame_mask=frame_mask,
-            title_input=title_input,
-            title_mask=title_mask
+            text_input=text_input,
+            text_mask=text_mask
         )
 
         # Step 4, load label if not test mode

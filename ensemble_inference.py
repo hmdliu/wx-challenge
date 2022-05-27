@@ -5,11 +5,24 @@ from tqdm import tqdm
 from config import parse_args
 from data_helper import MultiModalDataset
 from category_id_map import lv2id_to_category_id
-from model import MultiModal
 
 MODEL_PATH_LIST = [
-    './save/v1/model_epoch_0_mean_f1_0.0170.bin',
-    './save/v1/model_epoch_1_mean_f1_0.0211.bin',
+    'save/0526_filter_01/model_epoch_3_mean_f1_0.6199.bin',
+    'save/0526_filter_02/model_epoch_4_mean_f1_0.6206.bin',
+    'save/0526_filter_03/model_epoch_3_mean_f1_0.6259.bin',
+    'save/0526_filter_04/model_epoch_4_mean_f1_0.6181.bin',
+    'save/0526_filter_05/model_epoch_7_mean_f1_0.6216.bin',
+    'save/0526_filter_07/model_epoch_7_mean_f1_0.6223.bin',
+    'save/0526_filter_08/model_epoch_5_mean_f1_0.6171.bin',
+    'save/0526_filter_09/model_epoch_6_mean_f1_0.6228.bin',
+    'save/0526_filter_10/model_epoch_4_mean_f1_0.6240.bin',
+    'save/0526_filter_11/model_epoch_8_mean_f1_0.6168.bin',
+    'save/0526_filter_12/model_epoch_3_mean_f1_0.6266.bin',
+    'save/0526_filter_14/model_epoch_8_mean_f1_0.6191.bin',
+    'save/0526_filter_15/model_epoch_4_mean_f1_0.6222.bin',
+    'save/0526_filter_17/model_epoch_7_mean_f1_0.6246.bin',
+    'save/0526_filter_19/model_epoch_7_mean_f1_0.6206.bin',
+    'save/0526_filter_20/model_epoch_8_mean_f1_0.6258.bin',
 ]
 
 def ensemble_inference():
