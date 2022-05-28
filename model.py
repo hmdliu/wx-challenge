@@ -29,6 +29,18 @@ class MultiModal(nn.Module):
             self.refine = SimAM_Block()
         if args.co_att:
             assert args.vlad_hidden_size == bert_output_size
+            self.satt1 = MultiHeadAttentionOne(
+                n_head=args.co_att_head,
+                d_model=bert_output_size,
+                d_k=bert_output_size,
+                d_v=bert_output_size
+            )
+            self.satt2 = MultiHeadAttentionOne(
+                n_head=args.co_att_head,
+                d_model=bert_output_size,
+                d_k=bert_output_size,
+                d_v=bert_output_size
+            )
             self.att1 = MultiHeadAttentionOne(
                 n_head=args.co_att_head,
                 d_model=bert_output_size,
@@ -61,6 +73,10 @@ class MultiModal(nn.Module):
         # co-attention
         if self.co_att:
             vision_embedding = vision_embedding.unsqueeze(1)
+            # self-attention
+            vision_embedding = self.satt1(vision_embedding, vision_embedding, vision_embedding)
+            bert_embedding = self.satt2(bert_embedding, bert_embedding, bert_embedding)
+            # cross-attention
             vision_embedding = self.att1(vision_embedding, bert_embedding, bert_embedding)
             bert_embedding = self.att2(bert_embedding, vision_embedding, vision_embedding)
             vision_embedding = vision_embedding.squeeze(1)

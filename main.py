@@ -73,8 +73,6 @@ def train_and_validate(args):
 
         # 5. save checkpoint
         curr_score = results['mean_f1']
-        if curr_score > best_score:
-            best_score = curr_score
         if curr_score > max(best_score, args.export_bound):
             state_dict = model.module.state_dict() if args.device == 'cuda' else model.state_dict()
             save_dict = {
@@ -85,6 +83,8 @@ def train_and_validate(args):
                 'model_state_dict': state_dict,
             }
             torch.save(save_dict, f'{args.savedmodel_path}/model_epoch_{epoch}_mean_f1_{curr_score:.4f}.bin')
+        if curr_score > best_score:
+            best_score = curr_score
         
         # 6. early stopping
         patience = (patience + 1) if curr_score < prev_score else 0
@@ -102,7 +102,7 @@ def main():
     # random hyperparameter search
     args.seed = random.randint(0, 2022)
     args.dropout = random.choice([0.1, 0.2, 0.3])
-    args.final_dropout = random.choice([0.0, 0.5])
+    # args.final_dropout = random.choice([0.0, 0.5])
     args.lr_scheduler = random.choice(['cosine', 'linear'])
     args.learning_rate = log_uniform(3e-5, 7e-5)
     print('=' * 15, 'Search Config', '=' * 15)

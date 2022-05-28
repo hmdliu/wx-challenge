@@ -6,7 +6,7 @@ def parse_args():
 
     parser.add_argument("--seed", type=int, default=42, help="random seed.")
     parser.add_argument('--dropout', type=float, default=0.3, help='dropout ratio')
-    parser.add_argument('--final_dropout', type=float, default=0.5, help='final dropout ratio')
+    parser.add_argument('--final_dropout', type=float, default=0.0, help='final dropout ratio')
 
     # ========================= Data Configs ==========================
     parser.add_argument('--train_annotation', type=str, default='data/annotations/labeled_preprocessed.json')
@@ -25,7 +25,7 @@ def parse_args():
     # ======================== SavedModel Configs =========================
     parser.add_argument('--savedmodel_path', type=str, default='save/v1')
     parser.add_argument('--ckpt_file', type=str, default='save/v1/model.bin')
-    parser.add_argument('--export_bound', default=0.615, type=float, help='save checkpoint if mean_f1 > export_bound')
+    parser.add_argument('--export_bound', default=0.63, type=float, help='save checkpoint if mean_f1 > export_bound')
 
     # ========================= Learning Configs ==========================
     parser.add_argument('--max_epochs', type=int, default=12, help='How many epochs')
@@ -60,7 +60,7 @@ def parse_args():
     parser.add_argument('--fc_size', type=int, default=512, help="linear size before final linear")
     parser.add_argument('--simam', type=bool, default=False, help="SimAM before nextvlad")
     parser.add_argument('--co_att', type=bool, default=True, help="vision & text co-attention")
-    parser.add_argument('--co_att_head', type=int, default=12, help="num of heads for co-attention")
+    parser.add_argument('--co_att_head', type=int, default=1, help="number of attention heads")
 
 
     return parser.parse_args()
