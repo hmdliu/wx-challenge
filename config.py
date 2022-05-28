@@ -53,11 +53,14 @@ def parse_args():
     parser.add_argument('--max_frames', type=int, default=32)
     parser.add_argument('--vlad_cluster_size', type=int, default=64)
     parser.add_argument('--vlad_groups', type=int, default=8)
-    parser.add_argument('--vlad_hidden_size', type=int, default=1024, help='nextvlad output size using dense')
+    parser.add_argument('--vlad_hidden_size', type=int, default=768, help='nextvlad output size using dense')
     parser.add_argument('--se_ratio', type=int, default=8, help='reduction factor in se context gating')
 
     # ========================== Fusion Layer =============================
     parser.add_argument('--fc_size', type=int, default=512, help="linear size before final linear")
     parser.add_argument('--simam', type=bool, default=False, help="SimAM before nextvlad")
+    parser.add_argument('--co_att', type=bool, default=True, help="vision & text co-attention")
+    parser.add_argument('--co_att_head', type=int, default=12, help="num of heads for co-attention")
+
 
     return parser.parse_args()
