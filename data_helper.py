@@ -69,7 +69,7 @@ class MultiModalDataset(Dataset):
             self.handles = zipfile.ZipFile(self.zip_feat_path, 'r')
         # load annotations
         with open(ann_path, 'r', encoding='utf8') as f:
-            self.anns = self.sample_anns(json.load(f))
+            self.anns = self.sample_anns(json.load(f)) if args.sample_anns else json.load(f)
         # initialize the text tokenizer
         self.preprocess_text = args.preprocess_text
         self.tokenizer = BertTokenizer.from_pretrained(args.bert_dir, use_fast=True, cache_dir=args.bert_cache)

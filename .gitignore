@@ -131,6 +131,7 @@ save/
 
 # extra
 data/cache/
+pred/
 tmp/
 *.json
 *.zip

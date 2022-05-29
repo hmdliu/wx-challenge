@@ -1,23 +1,18 @@
+
+import os
+from tqdm import tqdm
+
 import torch
 from torch.utils.data import SequentialSampler, DataLoader
-from tqdm import tqdm
 
 from config import parse_args
 from data_helper import MultiModalDataset
 from category_id_map import lv2id_to_category_id
 
-MODEL_PATH_LIST = [
-    './save/0528_sa1_02/model_epoch_3_mean_f1_0.6441.bin',
-    './save/0528_sa1_03/model_epoch_2_mean_f1_0.6327.bin',
-    './save/0528_sa1_04/model_epoch_3_mean_f1_0.6321.bin',
-    './save/0528_sa2_02/model_epoch_3_mean_f1_0.6322.bin',
-    './save/0528_sa3_01/model_epoch_4_mean_f1_0.6313.bin',
-    './save/0528_sa3_03/model_epoch_4_mean_f1_0.6301.bin',
-    './save/0528_sa3_04/model_epoch_8_mean_f1_0.6410.bin',
-    './save/0528_sa4_02/model_epoch_3_mean_f1_0.6325.bin',
-    './save/0528_sa6_02/model_epoch_3_mean_f1_0.6357.bin',
-    './save/0528_sa6_04/model_epoch_5_mean_f1_0.6358.bin',
-]
+assert os.path.isfile('./pred/model_list.txt')
+with open('./pred/model_list.txt', 'r') as f:
+    lines = f.read().split('\n')
+MODEL_PATH_LIST = [l for l in lines if l.find('.bin') != -1]
 
 def ensemble_inference():
     args = parse_args()

@@ -20,6 +20,7 @@ def parse_args():
     parser.add_argument('--test_batch_size', default=256, type=int, help="use for testing duration per worker")
     parser.add_argument('--prefetch', default=16, type=int, help="use for training duration per worker")
     parser.add_argument('--num_workers', default=4, type=int, help="num_workers for dataloaders")
+    parser.add_argument('--sample_anns', default=False, type=bool, help="subsampling class 13")
     parser.add_argument('--preprocess_text', default=True, type=bool, help="remove stop words")
 
     # ======================== SavedModel Configs =========================
