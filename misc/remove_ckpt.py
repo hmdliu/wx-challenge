@@ -1,6 +1,7 @@
 
 import os
 
+keyword_list = ['filter']
 exp_dir_list = os.listdir('./save/')
 
 for dir in exp_dir_list:
@@ -11,3 +12,8 @@ for dir in exp_dir_list:
             if ep != max(ckpt_dict.keys()):
                 print(f'Removing {path}')
                 os.remove(path)
+    elif any([(dir.find(kw) != -1) for kw in keyword_list]):
+        for ckpt in ckpt_list:
+            path = os.path.join('./save/', dir, ckpt)
+            print(f'Removing {path}')
+            os.remove(path)
